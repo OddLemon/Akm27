@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Музыкальный плейлист</title>
+<style>
+body {
+  font-family: "Helvetica Neue", sans-serif;
+  background: #f4f4f9;
+  color: #333;
+  padding: 20px;
+}
+h1 {
+  text-align: center;
+  color: #444;
+  margin-bottom: 30px;
+}
+.track {
+  background: #fff;
+  padding: 15px 20px;
+  margin-bottom: 15px;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.track:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(0,0,0,0.15);
+}
+.track p {
+  margin: 0 0 10px 0;
+  font-weight: 500;
+}
+audio {
+  width: 100%;
+  outline: none;
+  border-radius: 8px;
+}
+</style>
+</head>
+<body>
+
+<h1>Моя музыкальная коллекция</h1>
+
+<div id="playlist"></div>
+
+<script>
+// Добавляем треки: название + ссылка Dropbox с dl=1
+const tracks = [
+  {name: "1 - Абу Собир - «Спасение опечаленного», урок 1", url: "https://www.dropbox.com/scl/fi/7e1g9k4f7i4kmvyfprmwc/01-1.mp3?rlkey=bwrc94at4htqt632q14zkq7su&st=f7o11ioo&dl=1"},
+  {name: "2 - Абу Собир - «Спасение опечаленного», урок 2", url: "https://www.dropbox.com/scl/fi/717orncdj1a7t88662whm/02-2.mp3?rlkey=872037vlf194gtuu74rhza6n6&st=9yd4xjws&dl=1"},
+  {name: "3 - Абу Собир - «Спасение опечаленного», урок 3", url: "https://www.dropbox.com/scl/fi/ccbhrxiuf1swqz31i77a8/03-3.mp3?rlkey=lc61po1ptsn8tugbxjy26ljlw&st=lzi2eu3c&dl=1"},
+  {name: "4 - Абу Собир - «Спасение опечаленного», урок 4", url: "https://www.dropbox.com/scl/fi/hawrwamuy5keczcujgw66/04-4.mp3?rlkey=ih92p6iwwstp81frc0jatxfud&st=msrjmve7&dl=1"},
+  {name: "5 - Абу Собир - «Спасение опечаленного», урок 5", url: "https://www.dropbox.com/scl/fi/xc1r33j6li09gerczcyfl/05-5.mp3?rlkey=h1l1altv169x3rf9i4x5ayxz1&st=j169cfdx&dl=1"},
+  {name: "6 - Абу Собир - «Спасение опечаленного», урок 6", url: "https://www.dropbox.com/scl/fi/8t1n9iplk0sqe05am6l6v/06-6.mp3?rlkey=zyksda8pc8drcud0o7u709bu7&st=3ve8b0ky&dl=1"},
+  {name: "7 - Абу Собир - «Спасение опечаленного», урок 7", url: "https://www.dropbox.com/scl/fi/yvsmcuhhuzg6clrsoacyx/07-7.mp3?rlkey=8k3xn16pq5oc5qb0mmz8m6d1u&st=7uibzowl&dl=1"},
+  {name: "8 - Абу Собир - «Спасение опечаленного», урок 8", url: "https://www.dropbox.com/scl/fi/wlhmtqncylckm5kn2a521/08-8.mp3?rlkey=vitv02hy52w339v9mkq7ypurb&st=b8afe1hg&dl=1"},
+  {name: "9 - Абу Собир - «Спасение опечаленного», урок 9", url: "https://www.dropbox.com/scl/fi/l5i63ashsgw2wy0llbb56/09-9.mp3?rlkey=60qq6j5qzzoc2ofm8zdlc682h&st=r1138r9m&dl=1"},
+  {name: "10 - Абу Собир - «Спасение опечаленного», урок 10", url: "https://www.dropbox.com/scl/fi/w5peo86wh9jmnz9qgxnbv/10-10.mp3?rlkey=0r9jehpkzonle775zgp7kpub0&st=azwj4ly3&dl=1"},
+  {name: "11 - Абу Собир - «Спасение опечаленного», урок 11", url: "https://www.dropbox.com/scl/fi/frexv6af3itvc07igro2k/11-11.mp3?rlkey=qwt8oum2pkwkuddl5x7m3zi5e&st=olagdzru&dl=1"},
+  {name: "12 - Абу Собир - «Спасение опечаленного», урок 12", url: "https://www.dropbox.com/scl/fi/36dc1lcgylgw3hhk22zpy/12-12.mp3?rlkey=jst1g9ugjt3pgy6x2hi8enpzf&st=sk13diix&dl=1"},
+  {name: "13 - Абу Собир - «Спасение опечаленного», урок 13", url: "https://www.dropbox.com/scl/fi/t912xgijogmvfz6779p15/13-13.mp3?rlkey=8214sh22574j9219j9o6s61rx&st=n6h3d6ro&dl=1"},
+  {name: "14 - Абу Собир - «Спасение опечаленного», урок 14", url: "https://www.dropbox.com/scl/fi/xfsmb1ceu00n3tt77ll2w/14-14.mp3?rlkey=ikn3ptmx9wwrgs995dmptfue8&st=b4p9c1lz&dl=1"},
+  {name: "15 - Абу Собир - «Спасение опечаленного», урок 15", url: "https://www.dropbox.com/scl/fi/xulqx4ktpy3yw8v3e1f2b/15-15.mp3?rlkey=k4oif7ek6o3no0sa4730zjdli&st=h6tb5ud4&dl=1"},
+  {name: "16 - Абу Собир - «Спасение опечаленного», урок 16", url: "https://www.dropbox.com/scl/fi/44hvjkoxk94netsbzfvtz/16-16.mp3?rlkey=nyiymmhnh3o349xvfzzng5xl0&st=c1lwsjjb&dl=1"},
+  {name: "17 - Абу Собир - «Спасение опечаленного», урок 17", url: "https://www.dropbox.com/scl/fi/fwx199bkxt1e6a2zc7nna/17-17.mp3?rlkey=9e15fiwndhnpya6u6on92hv5j&st=wz3ox0oj&dl=1"},
+  {name: "18 - Абу Собир - «Спасение опечаленного», урок 18", url: "https://www.dropbox.com/scl/fi/jwqdbslu7a930tyi48fmr/18-18.mp3?rlkey=js7r3o8ah8htmeg0cl5vwvmi1&st=r4u8sl0k&dl=1"},
+  {name: "19 - Абу Собир - «Спасение опечаленного», урок 19", url: "https://www.dropbox.com/scl/fi/7ioryyjqlhondc6upnz3q/19-19.mp3?rlkey=61u1nvqxmgqf4erkswpxg5dx5&st=xusbmcl3&dl=1"},
+  {name: "20 - Абу Собир - «Спасение опечаленного», урок 20", url: "https://www.dropbox.com/scl/fi/j46mbkfmda0em9izsx64v/20-20.mp3?rlkey=7hpw24cvl2iufh0t16ae7ekva&st=lxpjzk2x&dl=1"},
+  {name: "21 - Абу Собир - «Спасение опечаленного», урок 21", url: "https://www.dropbox.com/scl/fi/jp6nt8x47zf2nlkchrf1i/21-21.mp3?rlkey=yfr0xkmrnout5m29tqzxl5qd9&st=4nzz1joi&dl=1"},
+  {name: "22 - Абу Собир - «Спасение опечаленного», урок 22", url: "https://www.dropbox.com/scl/fi/1hz06e84bjryx5p7dhqo2/22-22.mp3?rlkey=dq14jvcyfi4w47zpxs19rux6s&st=n3g8p1pq&dl=1"},
+  {name: "23 - Абу Собир - «Спасение опечаленного», урок 23", url: "https://www.dropbox.com/scl/fi/oz05tqfappo1r8hu06u1p/23-23.mp3?rlkey=98bh46nqjafgjffoe3hx3y7v3&st=p5kz1dql&dl=1"},
+  {name: "24 - Абу Собир - «Спасение опечаленного», урок 24", url: "https://www.dropbox.com/scl/fi/hl0izy06ijbk5fy6mw6ho/24-24.mp3?rlkey=nmz7qt9uesnje1ec5thtsht31&st=45pfyia3&dl=1"},
+  {name: "25 - Абу Собир - «Спасение опечаленного», урок 25", url: "https://www.dropbox.com/scl/fi/mihfg2u2bcapfk8rawtd0/25-25.mp3?rlkey=oc6cerac3v6dpyv6avw9903hg&st=6gwpos7c&dl=1"},
+  {name: "26 - Абу Собир - «Спасение опечаленного», урок 26", url: "https://www.dropbox.com/scl/fi/024ud82941q14to4rnazw/26-26.mp3?rlkey=wg6i2lxvsq74krc4b2lxiksv3&st=wrbb1ea3&dl=1"},
+  {name: "27 - Абу Собир - «Спасение опечаленного», урок 27", url: "https://www.dropbox.com/scl/fi/4gc0dkbqctj09wt6wmu7q/27-27.mp3?rlkey=2esgxq0ij7u2wr8cd44uvlg5e&st=h6dkohuf&dl=1"},
+  {name: "28 - Абу Собир - «Спасение опечаленного», урок 28", url: "https://www.dropbox.com/scl/fi/8qial30w5h01a0urjgqvd/28-28.mp3?rlkey=vtd0rj85aw6n58xmfzla7u80l&st=fwawt9id&dl=1"},
+  {name: "29 - Абу Собир - «Спасение опечаленного», урок 29", url: "https://www.dropbox.com/scl/fi/dr051ydu6qjsielyff5ol/29-29.mp3?rlkey=ceocgxadm1fcxlsdhm4ve08r2&st=xcptl7rq&dl=1"},
+  {name: "30 - Абу Собир - «Спасение опечаленного», урок 30", url: "https://www.dropbox.com/scl/fi/56f4fy141b52hwlot3k49/30-30.mp3?rlkey=3pxof8kgdgf8k55mzeje5mlvn&st=anip3x7q&dl=1"},
+  {name: "31 - Абу Собир - «Спасение опечаленного», урок 31", url: "https://www.dropbox.com/scl/fi/3v6jb6l1gl2r5qbv42bnb/31-31.mp3?rlkey=s60x06qb6aj0awmvvl726osx6&st=6bng2mmz&dl=1"},
+  {name: "32 - Абу Собир - «Спасение опечаленного», урок 32", url: "https://www.dropbox.com/scl/fi/sruuerkfeoby1kibwv9pb/32-32.mp3?rlkey=5w8y8uropiodtl8cgjlzsmq0w&st=u7st5x9n&dl=1"},
+  {name: "33 - Абу Собир - «Спасение опечаленного», урок 33", url: "https://www.dropbox.com/scl/fi/97a38t1i1h0x1xmilnwee/33-33.mp3?rlkey=f3cc7zvqwc1f6txcesf35qlu5&st=0qi2kzz4&dl=1"},
+  {name: "34 - Абу Собир - «Спасение опечаленного», урок 34", url: "https://www.dropbox.com/scl/fi/a5liloqcbazbrrkx7ryk4/34-34.mp3?rlkey=su0yxqibbg1t9r9hqs1x8vami&st=ni21ro7t&dl=1"},
+  {name: "35 - Абу Собир - «Спасение опечаленного», урок 35", url: "https://www.dropbox.com/scl/fi/43t3x2hcqdgh05u3smxjh/35-35.mp3?rlkey=jpleu91rat2h5eg944bn1ka80&st=lq486c0g&dl=1"},
+  {name: "36 - Абу Собир - «Спасение опечаленного», урок 36", url: "https://www.dropbox.com/scl/fi/p2rxpa4cje3jc3vpqpvuh/36-36.mp3?rlkey=fzjq65d46vv0pnswg8dvl4hoa&st=rpipfic8&dl=1"},
+  {name: "37 - Абу Собир - «Спасение опечаленного», урок 37", url: "https://www.dropbox.com/scl/fi/o58y97hjazoc4jtwgm6ee/37-37.mp3?rlkey=3pkb3x7m80yqctua95g0f3qhl&st=gtevqpkv&dl=1"},
+  {name: "38 - Абу Собир - «Спасение опечаленного», урок 38", url: "https://www.dropbox.com/scl/fi/lqiw8496z5dfe2swyyq2u/38-38.mp3?rlkey=y1t1ag4gvaoraxevvjrtpyhex&st=ss5ajd6w&dl=1"},
+  {name: "39 - Абу Собир - «Спасение опечаленного», урок 39", url: "https://www.dropbox.com/scl/fi/1z6jb4j3hfoqk8pl4veem/39-39.mp3?rlkey=pfc1le5cirspzmwn657sq7jmg&st=iz37cd26&dl=1"},
+  {name: "40 - Абу Собир - «Спасение опечаленного», урок 40", url: "https://www.dropbox.com/scl/fi/p7ud6mc7kv87iw8v60x8d/40-40.mp3?rlkey=c99ms7z0qhw109gw0b22q1xcx&st=dc888c90&dl=1"},
+  {name: "41 - Абу Собир - «Спасение опечаленного», урок 41", url: "https://www.dropbox.com/scl/fi/w9uxv7h0eotylhot28rg9/41-41.mp3?rlkey=g5huuuymcb5ny3g7srftk7sfr&st=saefllkv&dl=1"},
+  {name: "42 - Абу Собир - «Спасение опечаленного», урок 42", url: "https://www.dropbox.com/scl/fi/gmc581bbwj7j1vg02ynjg/42-42.mp3?rlkey=j29oxjl8fv5f0gtvijjcdss1x&st=qohxkh70&dl=1"},
+  {name: "43 - Абу Собир - «Спасение опечаленного», урок 43", url: "https://www.dropbox.com/scl/fi/fx2usi1kfhpivqd3eo5h6/43-43.mp3?rlkey=w4hy3dmr8320z2emdfas4zopy&st=q5881byr&dl=1"},
+  {name: "44 - Абу Собир - «Спасение опечаленного», урок 44", url: "https://www.dropbox.com/scl/fi/w1x4j658xocqvwle24uro/44-44.mp3?rlkey=sf4q64qtc7pxsn7unsd4f222i&st=e2yrx9a4&dl=1"},
+  {name: "45 - Абу Собир - «Спасение опечаленного», урок 45", url: "https://www.dropbox.com/scl/fi/kmjd17sawj3l2ntcfzgyq/45-45.mp3?rlkey=upnlbho1siowqz5ndsaf0i0z8&st=9azyf3nn&dl=1"},
+  {name: "46 - Абу Собир - «Спасение опечаленного», урок 46", url: "https://www.dropbox.com/scl/fi/zptafmgfgrfy05ldfhznc/46-46.mp3?rlkey=gyaibv0bds5jp7og6qp8gfqty&st=r4njgiae&dl=1"},
+  {name: "47 - Абу Собир - «Спасение опечаленного», урок 47", url: "https://www.dropbox.com/scl/fi/j0s2jpwa8tcxbuexuxxnm/47-47.mp3?rlkey=tn0t1py7ncdr6j6po59mxu69h&st=w0lnve51&dl=1"},
+  {name: "48 - Абу Собир - «Спасение опечаленного», урок 48", url: "https://www.dropbox.com/scl/fi/ruztgvhkgc8fo6kaw6a25/48-48.mp3?rlkey=jjk1ezfv06n9sw1nfctlufrbp&st=bv8rcr5o&dl=1"},
+  {name: "49 - Абу Собир - «Спасение опечаленного», урок 49", url: "https://www.dropbox.com/scl/fi/lk0ovbnzmpku3k5t3bx67/49-49.mp3?rlkey=z1m9g7tlifrson9sbse6spbct&st=j7o0lu6p&dl=1"},
+  {name: "50 - Абу Собир - «Спасение опечаленного», урок 50", url: "https://www.dropbox.com/scl/fi/css2oii50yj24330begfh/50-50.mp3?rlkey=uuzwoxjgl1rnu5v8nk9mq8aok&st=byyxuimy&dl=1"},
+  {name: "51 - Абу Собир - «Спасение опечаленного», урок 51", url: "https://www.dropbox.com/scl/fi/q80k7zks2uv2ujjri5sns/51-51.mp3?rlkey=17n5oxg6y2csgcgoji11m2pxz&st=m96qbdq6&dl=1"},
+  {name: "52 - Абу Собир - «Спасение опечаленного», урок 52", url: "https://www.dropbox.com/scl/fi/3c1s8w4q8c1ltpf83xwhh/52-52.mp3?rlkey=8dgrz9hk9pg1cb3bmu5k9cbv5&st=n9okb1p0&dl=1"},
+];
+
+const playlistDiv = document.getElementById("playlist");
+
+tracks.forEach(track => {
+  const div = document.createElement("div");
+  div.className = "track";
+
+  const p = document.createElement("p");
+  p.textContent = track.name;
+
+  const audio = document.createElement("audio");
+  audio.controls = true;
+  audio.src = track.url;
+
+  div.appendChild(p);
+  div.appendChild(audio);
+  playlistDiv.appendChild(div);
+});
+</script>
+
+</body>
+</html>
