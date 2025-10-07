@@ -17,24 +17,48 @@ h1 {
 }
 .track {
   background: #fff;
-  padding: 15px 20px;
-  margin-bottom: 15px;
+  padding: 20px 25px;
+  margin-bottom: 20px;
   border-radius: 12px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.12);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 .track:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 5px 14px rgba(0,0,0,0.18);
 }
 .track p {
-  margin: 0 0 10px 0;
-  font-weight: 500;
+  margin: 0 0 12px 0;
+  font-weight: 600;
+  font-size: 1.2em;
 }
 audio {
-  width: 100%;
+  width: 95%;
+  height: 40px;
   outline: none;
   border-radius: 8px;
+}
+#pagination {
+  text-align: center;
+  margin-top: 25px;
+}
+#pagination button {
+  font-size: 1.4em;
+  padding: 12px 25px;
+  margin: 0 12px;
+  border-radius: 10px;
+  border: none;
+  background: #555;
+  color: #fff;
+  cursor: pointer;
+}
+#pagination button:disabled {
+  background: #aaa;
+  cursor: default;
+}
+#pageInfo {
+  font-size: 1.2em;
+  margin: 0 15px;
 }
 </style>
 </head>
@@ -44,8 +68,14 @@ audio {
 
 <div id="playlist"></div>
 
+<div id="pagination">
+  <button id="prevBtn">← Назад</button>
+  <span id="pageInfo"></span>
+  <button id="nextBtn">Вперед →</button>
+</div>
+
 <script>
-// Добавляем треки: название + ссылка Dropbox с dl=1
+// Массив треков (пример первых 20, остальные добавь по аналогии)
 const tracks = [
   {name: "1 - Абу Собир - «Спасение опечаленного», урок 1", url: "https://www.dropbox.com/scl/fi/7e1g9k4f7i4kmvyfprmwc/01-1.mp3?rlkey=bwrc94at4htqt632q14zkq7su&st=f7o11ioo&dl=1"},
   {name: "2 - Абу Собир - «Спасение опечаленного», урок 2", url: "https://www.dropbox.com/scl/fi/717orncdj1a7t88662whm/02-2.mp3?rlkey=872037vlf194gtuu74rhza6n6&st=9yd4xjws&dl=1"},
@@ -101,23 +131,58 @@ const tracks = [
   {name: "52 - Абу Собир - «Спасение опечаленного», урок 52", url: "https://www.dropbox.com/scl/fi/3c1s8w4q8c1ltpf83xwhh/52-52.mp3?rlkey=8dgrz9hk9pg1cb3bmu5k9cbv5&st=n9okb1p0&dl=1"},
 ];
 
+const tracksPerPage = 8;
+let currentPage = 0;
+
 const playlistDiv = document.getElementById("playlist");
+const pageInfo = document.getElementById("pageInfo");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
 
-tracks.forEach(track => {
-  const div = document.createElement("div");
-  div.className = "track";
+function renderPage(page) {
+  playlistDiv.innerHTML = "";
+  const start = page * tracksPerPage;
+  const end = Math.min(start + tracksPerPage, tracks.length);
 
-  const p = document.createElement("p");
-  p.textContent = track.name;
+  for (let i = start; i < end; i++) {
+    const track = tracks[i];
+    const div = document.createElement("div");
+    div.className = "track";
 
-  const audio = document.createElement("audio");
-  audio.controls = true;
-  audio.src = track.url;
+    const p = document.createElement("p");
+    p.textContent = track.name;
 
-  div.appendChild(p);
-  div.appendChild(audio);
-  playlistDiv.appendChild(div);
+    const audio = document.createElement("audio");
+    audio.controls = true;
+    audio.preload = "none";
+    audio.src = track.url;
+
+    div.appendChild(p);
+    div.appendChild(audio);
+    playlistDiv.appendChild(div);
+  }
+
+  pageInfo.textContent = `${start + 1} – ${end} из ${tracks.length}`;
+  prevBtn.disabled = page === 0;
+  nextBtn.disabled = end >= tracks.length;
+}
+
+prevBtn.addEventListener("click", () => {
+  if (currentPage > 0) {
+    currentPage--;
+    renderPage(currentPage);
+  }
 });
+
+nextBtn.addEventListener("click", () => {
+  if ((currentPage + 1) * tracksPerPage < tracks.length) {
+    currentPage++;
+    renderPage(currentPage);
+  }
+});
+
+// начальная загрузка
+renderPage(currentPage);
 </script>
 
 </body>
